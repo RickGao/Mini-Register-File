@@ -35,7 +35,7 @@ module tt_um_register (
     wire [2:0] write_reg;               // 3-bit address for write register
     wire we;                            // Write enable
     wire [`WIDTH-1:0] write_data;       // Data to write, width defined by macro
-    reg [`WIDTH-1:0] read_data1;       // Output data from register 1
+    reg [`WIDTH-1:0] read_data1;        // Output data from register 1
     reg [`WIDTH-1:0] read_data2;        // Output data from register 2
 
     // Input[7] and Input[3] disconnected
