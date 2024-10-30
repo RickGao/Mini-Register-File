@@ -72,7 +72,7 @@ module tt_um_register (
 
     // Synchronous write
     always @(posedge clk or posedge rst_n) begin
-        if (rst_n) begin
+        if (!rst_n) begin
             // Reset all registers to 0 on reset
             registers[0] <= `WIDTH'b0;
             registers[1] <= `WIDTH'b0;
