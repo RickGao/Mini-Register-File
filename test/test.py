@@ -33,7 +33,7 @@ async def test_register_file(dut):
     # Read back value from register 1
     dut.ui_in.value = 0b00000001  # Input[2:0]=001 (read reg 1)
     await ClockCycles(dut.clk, 1)
-    assert dut.uo_out.value[3:0] == 2, f"Expected register 1 to contain 2, got {dut.uo_out.value[3:0]}"
+    assert dut.uo_out.value.integer & 0xF == 2, f"Expected register 1 to contain 2, got {dut.uo_out.value.integer & 0xF}"
 
     # Write value to register 2
     dut.uio_in.value = 0b10000101  # IO[7]=1 (we=1), IO[6:4]=010 (write to reg 2), IO[3:0]=0b0101 (data=5)
@@ -42,7 +42,7 @@ async def test_register_file(dut):
     # Read back value from register 2
     dut.ui_in.value = 0b00000100  # Input[6:4]=010 (read reg 2)
     await ClockCycles(dut.clk, 1)
-    assert dut.uo_out.value[7:4] == 5, f"Expected register 2 to contain 5, got {dut.uo_out.value[7:4]}"
+    assert (dut.uo_out.value.integer >> 4) & 0xF == 5, f"Expected register 2 to contain 5, got {(dut.uo_out.value.integer >> 4) & 0xF}"
 
     # Write and read to ensure register 0 remains 0 (RISC-V convention)
     dut.uio_in.value = 0b10000011  # IO[7]=1 (we=1), IO[6:4]=000 (write to reg 0), IO[3:0]=0b0011 (attempt to write 3)
@@ -51,6 +51,6 @@ async def test_register_file(dut):
     # Check that register 0 is still zero
     dut.ui_in.value = 0b00000000  # Input[2:0]=000 (read reg 0)
     await ClockCycles(dut.clk, 1)
-    assert dut.uo_out.value[3:0] == 0, f"Expected register 0 to remain 0, got {dut.uo_out.value[3:0]}"
+    assert dut.uo_out.value.integer & 0xF == 0, f"Expected register 0 to remain 0, got {dut.uo_out.value.integer & 0xF}"
 
     dut._log.info("Register file test completed successfully")
