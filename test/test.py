@@ -39,7 +39,7 @@ async def test_register_file(dut):
     # Read back value from register 1
     dut.ui_in.value = 0b00000001  # Input[2:0]=001 (read reg 1)
     dut.uio_in.value = 0b00000000
-    # await ClockCycles(dut.clk, 1)  # Ensure read
+    await ClockCycles(dut.clk, 1)  # Ensure read
     assert dut.uo_out.value.integer & 0xF == 2, f"Expected register 1 to contain 2, got {dut.uo_out.value.integer & 0xFF}"
 
     await ClockCycles(dut.clk, 10)  # Wait
@@ -52,7 +52,7 @@ async def test_register_file(dut):
     # Read back value from register 2
     dut.ui_in.value = 0b00100000  # Input[6:4]=010 (read reg 2)
     dut.uio_in.value = 0b00000000
-    # await ClockCycles(dut.clk, 1)  # Ensure read
+    await ClockCycles(dut.clk, 1)  # Ensure read
     assert (dut.uo_out.value.integer >> 4) & 0xF == 5, f"Expected register 2 to contain 5, got {(dut.uo_out.value.integer >> 4) & 0xF}"
 
     await ClockCycles(dut.clk, 10)  # Wait
@@ -65,7 +65,7 @@ async def test_register_file(dut):
     # Check that register 0 is still zero
     dut.ui_in.value = 0b00000000  # Input[2:0]=000 (read reg 0)
     dut.uio_in.value = 0b00000000
-    # await ClockCycles(dut.clk, 1)
+    await ClockCycles(dut.clk, 1) # Ensure read
     assert dut.uo_out.value.integer & 0xF == 0, f"Expected register 0 to remain 0, got {dut.uo_out.value.integer & 0xF}"
 
     await ClockCycles(dut.clk, 10)  # Wait
