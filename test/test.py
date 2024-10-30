@@ -28,12 +28,14 @@ async def test_register_file(dut):
     dut._log.info("Testing write and read operations")
 
     # Write value to register 1
+    dut.ui_in.value = 0b00000000
     dut.uio_in.value = 0b10010010  # IO[7]=1 (we=1), IO[6:4]=001 (write to reg 1), IO[3:0]=0b0010 (data=2)
     await ClockCycles(dut.clk, 1)  # Apply write
 
 
     # Read back value from register 1
     dut.ui_in.value = 0b00000001  # Input[2:0]=001 (read reg 1)
+    dut.uio_in.value = 0b00000000
     # await ClockCycles(dut.clk, 1)  # Ensure read
     assert dut.uo_out.value.integer & 0xF == 2, f"Expected register 1 to contain 2, got {dut.uo_out.value.integer & 0xFF}"
 
