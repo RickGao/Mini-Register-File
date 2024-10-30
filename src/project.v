@@ -65,7 +65,7 @@ module tt_um_register (
     reg [`WIDTH-1:0] registers [7:0];
 
 
-    Asynchronous read to wire
+    // Asynchronous read to wire
     assign read_data1 = registers[read_reg1];
     assign read_data2 = registers[read_reg2];
     
