@@ -79,17 +79,18 @@ module tt_um_register (
     // Synchronous write
     // always @(posedge clk or posedge rst_n) begin
     always @(posedge clk) begin
-        if (!rst_n) begin
-            // Reset all registers to 0 on reset
-            registers[0] <= `WIDTH'b0;
-            registers[1] <= `WIDTH'b0;
-            registers[2] <= `WIDTH'b0;
-            registers[3] <= `WIDTH'b0;
-            registers[4] <= `WIDTH'b0;
-            registers[5] <= `WIDTH'b0;
-            registers[6] <= `WIDTH'b0;
-            registers[7] <= `WIDTH'b0;
-        end else if (we && write_reg != 3'b000) begin
+        // if (!rst_n) begin
+        //     // Reset all registers to 0 on reset
+        //     registers[0] <= `WIDTH'b0;
+        //     registers[1] <= `WIDTH'b0;
+        //     registers[2] <= `WIDTH'b0;
+        //     registers[3] <= `WIDTH'b0;
+        //     registers[4] <= `WIDTH'b0;
+        //     registers[5] <= `WIDTH'b0;
+        //     registers[6] <= `WIDTH'b0;
+        //     registers[7] <= `WIDTH'b0;
+        // end else 
+        if (we && write_reg != 3'b000) begin
             // Write to the register (skip register 0 to maintain x0 as always zero)
             registers[write_reg] <= write_data;
         end
