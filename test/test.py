@@ -10,8 +10,8 @@ from cocotb.triggers import ClockCycles
 async def test_register_file(dut):
     dut._log.info("Start register file test")
 
-    # Set the clock period to 100 us (10 KHz)
-    clock = Clock(dut.clk, 100, units="us")
+    # Set the clock period to 1000 us (1 KHz)
+    clock = Clock(dut.clk, 1000, units="us")
     cocotb.start_soon(clock.start())
 
     # Reset the design
@@ -36,12 +36,12 @@ async def test_register_file(dut):
 
     # Read back value from register 1
     dut.ui_in.value = 0b00000001  # Input[2:0]=001 (read reg 1)
-    # await ClockCycles(dut.clk, 0)  # Ensure read
+    await ClockCycles(dut.clk, 2)  # Ensure read
     assert dut.uo_out.value.integer & 0xF == 2, f"Expected register 1 to contain 2, got {dut.uo_out.value.integer & 0xF}"
 
     # Write value to register 2
     dut.uio_in.value = 0b10000101  # IO[7]=1 (we=1), IO[6:4]=010 (write to reg 2), IO[3:0]=0b0101 (data=5)
-    await ClockCycles(dut.clk, 1)  # Apply write
+    await ClockCycles(dut.clk, 2)  # Apply write
     await ClockCycles(dut.clk, 2)  # Wait additional cycles for write to take effect
 
     # Read back value from register 2
