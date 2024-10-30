@@ -6,6 +6,9 @@ from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
 
 
+WAIT_TIME_AFTER_WRITE = 2
+
+
 @cocotb.test()
 async def test_register_file(dut):
     dut._log.info("Start register file test")
@@ -30,7 +33,7 @@ async def test_register_file(dut):
     # Write value to register 1
     dut.ui_in.value = 0b00000000
     dut.uio_in.value = 0b10010010  # IO[7]=1 (we=1), IO[6:4]=001 (write to reg 1), IO[3:0]=0b0010 (data=2)
-    await ClockCycles(dut.clk, 1)  # Apply write
+    await ClockCycles(dut.clk, WAIT_TIME_AFTER_WRITE)  # Apply write
 
 
     # Read back value from register 1
@@ -44,7 +47,7 @@ async def test_register_file(dut):
     # Write value to register 2
     dut.ui_in.value = 0b00000000
     dut.uio_in.value = 0b10100101  # IO[7]=1 (we=1), IO[6:4]=010 (write to reg 2), IO[3:0]=0b0101 (data=5)
-    await ClockCycles(dut.clk, 1)  # Apply write
+    await ClockCycles(dut.clk, WAIT_TIME_AFTER_WRITE)  # Apply write
 
     # Read back value from register 2
     dut.ui_in.value = 0b00100000  # Input[6:4]=010 (read reg 2)
@@ -57,7 +60,7 @@ async def test_register_file(dut):
     # Write and read to ensure register 0 remains 0 (RISC-V convention)
     dut.ui_in.value = 0b00000000
     dut.uio_in.value = 0b10000011  # IO[7]=1 (we=1), IO[6:4]=000 (write to reg 0), IO[3:0]=0b0011 (attempt to write 3)
-    await ClockCycles(dut.clk, 1)
+    await ClockCycles(dut.clk, WAIT_TIME_AFTER_WRITE)
 
     # Check that register 0 is still zero
     dut.ui_in.value = 0b00000000  # Input[2:0]=000 (read reg 0)
