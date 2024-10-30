@@ -10,8 +10,8 @@ from cocotb.triggers import ClockCycles
 async def test_register_file(dut):
     dut._log.info("Start register file test")
 
-    # Set the clock period to 10 us (100 KHz)
-    clock = Clock(dut.clk, 10, units="us")
+    # Set the clock period to 100 us (10 KHz)
+    clock = Clock(dut.clk, 100, units="us")
     cocotb.start_soon(clock.start())
 
     # Reset the design
