@@ -28,7 +28,7 @@ async def test_register_file(dut):
     dut._log.info("Testing write and read operations")
 
     # Write value to register 1
-    dut.uio_in.value = 0b10000010  # IO[7]=1 (we=1), IO[6:4]=001 (write to reg 1), IO[3:0]=0b0010 (data=2)
+    dut.uio_in.value = 0b10010010  # IO[7]=1 (we=1), IO[6:4]=001 (write to reg 1), IO[3:0]=0b0010 (data=2)
     await ClockCycles(dut.clk, 1)  # Apply write
 
     # Wait additional cycles to ensure write completes
