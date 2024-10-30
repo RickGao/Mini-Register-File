@@ -35,8 +35,8 @@ module tt_um_register (
     wire [2:0] write_reg;               // 3-bit address for write register
     wire we;                            // Write enable
     wire [`WIDTH-1:0] write_data;       // Data to write, width defined by macro
-    reg [`WIDTH-1:0] read_data1;        // Output data from register 1
-    reg [`WIDTH-1:0] read_data2;        // Output data from register 2
+    wire [`WIDTH-1:0] read_data1;        // Output data from register 1
+    wire [`WIDTH-1:0] read_data2;        // Output data from register 2
 
     // Input[7] and Input[3] disconnected
     assign read_reg1[2:0]  = ui_in[2:0];    // Input[2:0] is read register 1
@@ -65,15 +65,15 @@ module tt_um_register (
     reg [`WIDTH-1:0] registers [7:0];
 
 
-    // Asynchronous read to wire
-    // assign read_data1 = registers[read_reg1];
-    // assign read_data2 = registers[read_reg2];
+    Asynchronous read to wire
+    assign read_data1 = registers[read_reg1];
+    assign read_data2 = registers[read_reg2];
     
-    // Asynchronous read to register
-    always @(*) begin
-        read_data1 = registers[read_reg1];
-        read_data2 = registers[read_reg2];
-    end
+    // // Asynchronous read to register
+    // always @(*) begin
+    //     read_data1 = registers[read_reg1];
+    //     read_data2 = registers[read_reg2];
+    // end
 
 
     // Synchronous write
