@@ -30,13 +30,13 @@ module tt_um_register (
     assign uio_out = 0;
 
 
-    wire [2:0] read_reg1,               // 3-bit address for read register 1
-    wire [2:0] read_reg2,               // 3-bit address for read register 2
-    wire [2:0] write_reg,               // 3-bit address for write register
-    wire we,                            // Write enable
-    wire [`WIDTH-1:0] write_data,       // Data to write, width defined by macro
-    wire [`WIDTH-1:0] read_data1,       // Output data from register 1
-    wire [`WIDTH-1:0] read_data2        // Output data from register 2
+    wire [2:0] read_reg1;               // 3-bit address for read register 1
+    wire [2:0] read_reg2;               // 3-bit address for read register 2
+    wire [2:0] write_reg;               // 3-bit address for write register
+    wire we;                            // Write enable
+    wire [`WIDTH-1:0] write_data;       // Data to write, width defined by macro
+    wire [`WIDTH-1:0] read_data1;       // Output data from register 1
+    wire [`WIDTH-1:0] read_data2;        // Output data from register 2
 
     // Input[7] and Input[3] disconnected
     assign read_reg1[2:0]  = ui_in[2:0];    // Input[2:0] is read register 1
