@@ -4,6 +4,8 @@
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
+from cocotb.triggers import Timer
+
 
 
 
@@ -28,6 +30,7 @@ async def read_register(dut, reg_addr1, expected_data1, reg_addr2, expected_data
     dut._log.info(f"Signals: ui_in={dut.ui_in.value}, uio_in={dut.uio_in.value}")
 
     # await ClockCycles(dut.clk, 1)
+    await Timer(10, units="us")
 
     # Extract read values from output
     read_data1 = dut.uo_out.value.integer & 0xF
