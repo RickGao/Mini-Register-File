@@ -6,7 +6,38 @@ from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles
 
 
-WAIT_TIME_AFTER_WRITE = 2
+
+
+async def write_register(dut, reg_addr, write_data):
+    """Writes a value to a specific register."""
+    we = 1  # Write enable
+    dut.ui_in.value = 0b00000000  # Clearing ui_in for write operation
+    dut.uio_in.value = (we << 7) | (reg_addr << 4) | write_data  # Setting we, reg_addr, and write_data
+
+    dut._log.info(f"Writing to register {reg_addr}: write_enable={we}, write_data={write_data}")
+    dut._log.info(f"Signals: ui_in={dut.ui_in.value}, uio_in={dut.uio_in.value}")
+    await ClockCycles(dut.clk, 1)
+
+
+async def read_register(dut, reg_addr1, expected_data1, reg_addr2, expected_data2):
+    """Reads values from two registers and compares them to the expected data."""
+    dut.ui_in.value = (reg_addr2 << 4) | reg_addr1  # Set read_reg1 to reg_addr1 and read_reg2 to reg_addr2
+    dut.uio_in.value = 0b00000000  # Set uio_in to 0 for read operation
+
+    dut._log.info(f"Reading from registers {reg_addr1} and {reg_addr2}")
+    dut._log.info(f"Signals: ui_in={dut.ui_in.value}, uio_in={dut.uio_in.value}")
+
+    await ClockCycles(dut.clk, 1)
+
+    # Extract read values from output
+    read_data1 = dut.uo_out.value.integer & 0xF
+    read_data2 = (dut.uo_out.value.integer >> 4) & 0xF
+
+    dut._log.info(f"Output after read from register {reg_addr1}: Expected {expected_data1}, Got {read_data1}")
+    dut._log.info(f"Output after read from register {reg_addr2}: Expected {expected_data2}, Got {read_data2}")
+
+    assert read_data1 == expected_data1, f"Expected register {reg_addr1} to contain {expected_data1}, got {read_data1}"
+    assert read_data2 == expected_data2, f"Expected register {reg_addr2} to contain {expected_data2}, got {read_data2}"
 
 
 @cocotb.test()
@@ -18,7 +49,7 @@ async def test_register_file(dut):
     cocotb.start_soon(clock.start())
 
     # Reset the design
-    dut._log.info("Reset")
+    dut._log.info("Resetting the design")
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
@@ -27,47 +58,16 @@ async def test_register_file(dut):
     dut.rst_n.value = 1  # Release reset
     await ClockCycles(dut.clk, 10)
 
-    # Test write and read operations
-    dut._log.info("Testing write and read operations")
+    # Test case: Write value 2 to register 1 and read it back
+    await write_register(dut, reg_addr=0b001, write_data=0b0010)
+    await read_register(dut, reg_addr=0b001, expected_data=0b0010, read_port=1)
 
-    # Write value to register 1
-    dut.ui_in.value = 0b00000000
-    dut.uio_in.value = 0b10010010  # IO[7]=1 (we=1), IO[6:4]=001 (write to reg 1), IO[3:0]=0b0010 (data=2)
-    await ClockCycles(dut.clk, WAIT_TIME_AFTER_WRITE)  # Apply write
+    # Test case: Write value 5 to register 2 and read it back
+    await write_register(dut, reg_addr=0b010, write_data=0b0101)
+    await read_register(dut, reg_addr=0b010, expected_data=0b0101, read_port=2)
 
+    # Test case: Write to register 0 and confirm it remains zero (RISC-V convention)
+    await write_register(dut, reg_addr=0b000, write_data=0b0011)
+    await read_register(dut, reg_addr=0b000, expected_data=0b0000, read_port=1)
 
-    # Read back value from register 1
-    dut.ui_in.value = 0b00000001  # Input[2:0]=001 (read reg 1)
-    dut.uio_in.value = 0b00000000
-    await ClockCycles(dut.clk, 1)  # Ensure read
-    assert dut.uo_out.value.integer & 0xF == 2, f"Expected register 1 to contain 2, got {dut.uo_out.value.integer & 0xFF}"
-
-    await ClockCycles(dut.clk, 10)  # Wait
-
-    # Write value to register 2
-    dut.ui_in.value = 0b00000000
-    dut.uio_in.value = 0b10100101  # IO[7]=1 (we=1), IO[6:4]=010 (write to reg 2), IO[3:0]=0b0101 (data=5)
-    await ClockCycles(dut.clk, WAIT_TIME_AFTER_WRITE)  # Apply write
-
-    # Read back value from register 2
-    dut.ui_in.value = 0b00100000  # Input[6:4]=010 (read reg 2)
-    dut.uio_in.value = 0b00000000
-    await ClockCycles(dut.clk, 1)  # Ensure read
-    assert (dut.uo_out.value.integer >> 4) & 0xF == 5, f"Expected register 2 to contain 5, got {(dut.uo_out.value.integer >> 4) & 0xF}"
-
-    await ClockCycles(dut.clk, 10)  # Wait
-
-    # Write and read to ensure register 0 remains 0 (RISC-V convention)
-    dut.ui_in.value = 0b00000000
-    dut.uio_in.value = 0b10000011  # IO[7]=1 (we=1), IO[6:4]=000 (write to reg 0), IO[3:0]=0b0011 (attempt to write 3)
-    await ClockCycles(dut.clk, WAIT_TIME_AFTER_WRITE)
-
-    # Check that register 0 is still zero
-    dut.ui_in.value = 0b00000000  # Input[2:0]=000 (read reg 0)
-    dut.uio_in.value = 0b00000000
-    await ClockCycles(dut.clk, 1) # Ensure read
-    assert dut.uo_out.value.integer & 0xF == 0, f"Expected register 0 to remain 0, got {dut.uo_out.value.integer & 0xF}"
-
-    await ClockCycles(dut.clk, 10)  # Wait
-
-    dut._log.info("Register file test completed successfully")
+    dut._log.info("Register file test completed successfully!")
