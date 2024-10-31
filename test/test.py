@@ -42,7 +42,7 @@ async def read_register(dut, reg_addr1, expected_data1, reg_addr2, expected_data
     assert read_data1 == expected_data1, f"Expected register {reg_addr1} to contain {expected_data1}, got {read_data1}"
     assert read_data2 == expected_data2, f"Expected register {reg_addr2} to contain {expected_data2}, got {read_data2}"
 
-    await ClockCycles(dut.clk, 1)
+    # await ClockCycles(dut.clk, 1)
 
 
 @cocotb.test()
