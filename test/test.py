@@ -34,7 +34,7 @@ async def read_register(dut, reg_addr1, expected_data1, reg_addr2, expected_data
     read_data2 = (dut.uo_out.value.integer >> 4) & 0xF
 
     dut._log.info(f"Output after read from register {reg_addr1}: Expected {expected_data1}, Got {read_data1}")
-    dut._log.info(f"Output after read from register {reg_addr2}: Expected {expected_data2}, Got {read_data2}")
+    dut._log.info(f"Output after read from register {reg_addr2}: Expected {expected_data2}, Got {read_data2}\n")
 
     assert read_data1 == expected_data1, f"Expected register {reg_addr1} to contain {expected_data1}, got {read_data1}"
     assert read_data2 == expected_data2, f"Expected register {reg_addr2} to contain {expected_data2}, got {read_data2}"
