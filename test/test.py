@@ -86,9 +86,10 @@ async def test_register_file(dut):
 
     dut._log.info("Test case 4: Overwrite a register and check the last write persists\n")
 
+    await write_register(dut, reg_addr=0b010, write_data=0b0111)  # Write 7 to register 2
     await write_register(dut, reg_addr=0b011, write_data=0b1001)  # Write 9 to register 3
     await write_register(dut, reg_addr=0b011, write_data=0b0100)  # Overwrite with 4
-    await read_register(dut, reg_addr1=0b011, expected_data1=0b0100, reg_addr2=0b010, expected_data2=0b0101)
+    await read_register(dut, reg_addr1=0b011, expected_data1=0b0100, reg_addr2=0b010, expected_data2=0b0111)
 
     dut._log.info("Test case 5: Write to multiple registers, reset, and verify all registers are cleared\n")
     
