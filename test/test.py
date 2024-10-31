@@ -58,16 +58,13 @@ async def test_register_file(dut):
     dut.rst_n.value = 1  # Release reset
     await ClockCycles(dut.clk, 10)
 
-    # Test case: Write value 2 to register 1 and read it back
+    # Test case: Write value 2 to register 1 and value 5 to register 2, then read both back
     await write_register(dut, reg_addr=0b001, write_data=0b0010)
-    await read_register(dut, reg_addr=0b001, expected_data=0b0010, read_port=1)
-
-    # Test case: Write value 5 to register 2 and read it back
     await write_register(dut, reg_addr=0b010, write_data=0b0101)
-    await read_register(dut, reg_addr=0b010, expected_data=0b0101, read_port=2)
+    await read_register(dut, reg_addr1=0b001, expected_data1=0b0010, reg_addr2=0b010, expected_data2=0b0101)
 
-    # Test case: Write to register 0 and confirm it remains zero (RISC-V convention)
+    # Test case: Write to register 0 and confirm it remains zero (RISC-V convention), and check register 1 still has 2
     await write_register(dut, reg_addr=0b000, write_data=0b0011)
-    await read_register(dut, reg_addr=0b000, expected_data=0b0000, read_port=1)
+    await read_register(dut, reg_addr1=0b000, expected_data1=0b0000, reg_addr2=0b001, expected_data2=0b0010)
 
     dut._log.info("Register file test completed successfully!")
